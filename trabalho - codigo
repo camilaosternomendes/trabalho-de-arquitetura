@@ -1,0 +1,84 @@
+.data
+phi_string: .asciiz "Razão áurea φ: "
+
+.text
+.globl main
+
+# Função principal
+main:
+    # Calcular o 30° número de Fibonacci
+    li $a0, 30          # $a0 = 30
+    jal fibonacci       # Chama a função fibonacci
+    move $s1, $v0       # $s1 = 30° número de Fibonacci
+
+    # Calcular o 41° número de Fibonacci
+    li $a0, 41          # $a0 = 41
+    jal fibonacci       # Chama a função fibonacci
+    move $s2, $v0       # $s2 = 41° número de Fibonacci
+
+    # Calcular o 40° número de Fibonacci
+    li $a0, 40          # $a0 = 40
+    jal fibonacci       # Chama a função fibonacci
+    move $s3, $v0       # $s3 = 40° número de Fibonacci
+
+    # Calcular a razão áurea φ
+    jal calcular_phi    # Chama a função calcular_phi
+
+    # Imprimir o valor da razão áurea
+    li $v0, 4           # syscall para imprimir string
+    la $a0, phi_string  # carregar o endereço da string
+    syscall
+
+    li $v0, 2           # syscall para imprimir float
+    mov.s $f12, $f0     # mover o valor de $f0 para $f12
+    syscall
+
+    # Finaliza o programa
+    li $v0, 10          # syscall para terminar o programa
+    syscall
+
+# Função para calcular o n-ésimo termo da sequência de Fibonacci
+fibonacci:
+    # Entrada: $a0 = n
+    # Saída: $v0 = Fibonacci(n)
+    li $t0, 0           # $t0 = Fibonacci(0)
+    li $t1, 1           # $t1 = Fibonacci(1)
+
+    move $t2, $a0       # $t2 = n
+
+    beqz $a0, fib_zero  # Se n == 0, retorna 0
+    li $v0, 1
+    beq $a0, $v0, fib_one # Se n == 1, retorna 1
+
+    subu $t2, $t2, 1    # $t2 = n - 1 (já processamos os primeiros dois casos)
+
+fib_loop:
+    beqz $t2, fib_done  # Se t2 == 0, termina
+    add $t3, $t0, $t1   # $t3 = Fibonacci(n-1) + Fibonacci(n-2)
+    move $t0, $t1       # $t0 = $t1
+    move $t1, $t3       # $t1 = $t3
+    subu $t2, $t2, 1    # Decrementa o contador
+    j fib_loop          # Loop até n
+
+fib_done:
+    move $v0, $t1       # $v0 = Fibonacci(n)
+    jr $ra              # Retorna
+
+fib_zero:
+    move $v0, $t0       # $v0 = 0
+    jr $ra              # Retorna
+
+fib_one:
+    move $v0, $t1       # $v0 = 1
+    jr $ra              # Retorna
+
+# Função para calcular a razão áurea φ
+calcular_phi:
+    # Entrada: Nenhuma (usa $s2 e $s3)
+    # Saída: $f0 = φ
+    mtc1 $s2, $f2       # Move o valor de $s2 para $f2
+    mtc1 $s3, $f4       # Move o valor de $s3 para $f4
+    cvt.s.w $f2, $f2    # Converte $f2 para ponto flutuante
+    cvt.s.w $f4, $f4    # Converte $f4 para ponto flutuante
+    div.s $f0, $f2, $f4 # $f0 = $f2 / $f4 (razão áurea)
+    jr $ra              # Retorna
