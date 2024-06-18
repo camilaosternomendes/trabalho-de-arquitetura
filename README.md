@@ -1,4 +1,4 @@
-# trabalho-de-arquitetura
+# README
 
 ## Introdução
 Este repositório contém um programa desenvolvido em MIPS/MARS para calcular termos específicos da sequência de Fibonacci e, a partir desses valores, determinar a razão áurea (φ). A razão áurea, aproximadamente 1.61803398875, é uma constante irracional importante em diversas áreas, como matemática, arte, arquitetura e natureza.
